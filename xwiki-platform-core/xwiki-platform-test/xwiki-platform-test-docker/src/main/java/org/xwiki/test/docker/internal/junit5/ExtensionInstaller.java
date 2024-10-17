@@ -25,7 +25,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
+import org.apache.hc.client5.http.auth.UsernamePasswordCredentials;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
 import org.eclipse.aether.artifact.Artifact;
@@ -37,6 +37,7 @@ import org.xwiki.test.extension.RestExtensionInstaller;
 import org.xwiki.test.integration.maven.ArtifactCoordinate;
 import org.xwiki.test.integration.maven.ArtifactResolver;
 import org.xwiki.test.integration.maven.MavenResolver;
+import org.xwiki.test.ui.TestUtils.TestCredentials;
 
 import static org.xwiki.test.docker.internal.junit5.DockerTestUtils.getComponentManager;
 import static org.xwiki.test.docker.internal.junit5.DockerTestUtils.getTestConfiguration;
@@ -101,7 +102,7 @@ public class ExtensionInstaller
      */
     public void installExtensions(String username, String password, String installUserReference) throws Exception
     {
-        installExtensions(new UsernamePasswordCredentials(username, password), installUserReference, null);
+        installExtensions(new TestCredentials(username, password), installUserReference, null);
     }
 
     /**
@@ -117,7 +118,7 @@ public class ExtensionInstaller
      * null they'll be installed in the main wiki
      * @throws Exception if there's a failure to install the extensions in the running XWiki instance
      */
-    public void installExtensions(UsernamePasswordCredentials credentials, String installUserReference,
+    public void installExtensions(TestCredentials credentials, String installUserReference,
         List<String> namespaces) throws Exception
     {
         Set<ExtensionId> extensions = new LinkedHashSet<>();
@@ -207,7 +208,7 @@ public class ExtensionInstaller
      *            namespaces
      * @throws Exception if there's a failure to install the extensions in the running XWiki instance
      */
-    public void installExtensions(Collection<ExtensionId> extensions, UsernamePasswordCredentials credentials,
+    public void installExtensions(Collection<ExtensionId> extensions, TestCredentials credentials,
         String installUserReference, List<String> namespaces, boolean failOnExist) throws Exception
     {
         this.restExtensionInstaller.installExtensions(getXWikiURL(this.context), extensions, credentials,

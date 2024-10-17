@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
+import org.apache.hc.client5.http.auth.UsernamePasswordCredentials;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xwiki.component.manager.ComponentLookupException;
@@ -93,7 +93,7 @@ public class RestExtensionInstaller
      * @throws Exception if there's a failure to install the extensions in the running XWiki instance
      */
     public void installExtensions(String baseUrl, Collection<ExtensionId> extensions,
-        UsernamePasswordCredentials credentials,
+        TestCredentials credentials,
         String installUserReference, List<String> namespaces, boolean failOnExist) throws Exception
     {
         String xwikiRESTURL = baseUrl;

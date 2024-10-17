@@ -28,6 +28,7 @@ import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -82,24 +83,24 @@ public class CommentsResourceIT extends AbstractHttpIT
     {
         String commentsUri = buildURI(CommentsResource.class, getWiki(), this.spaces, this.pageName).toString();
 
-        GetMethod getMethod = executeGet(commentsUri);
-        Assert.assertEquals(getHttpMethodInfo(getMethod), HttpStatus.SC_OK, getMethod.getStatusCode());
+        CloseableHttpResponse getResponse = executeGet(commentsUri);
+        Assert.assertEquals(getHttpMethodInfo(getResponse), HttpStatus.SC_OK, getResponse.getCode());
 
-        Comments comments = (Comments) unmarshaller.unmarshal(getMethod.getResponseBodyAsStream());
+        Comments comments = (Comments) unmarshaller.unmarshal(getResponse.getResponseBodyAsStream());
 
         int numberOfComments = comments.getComments().size();
 
         Comment comment = objectFactory.createComment();
         comment.setText("Comment");
 
-        PostMethod postMethod = executePostXml(commentsUri, comment, TestUtils.SUPER_ADMIN_CREDENTIALS.getUserName(),
+        CloseableHttpResponse postResponse = executePostXml(commentsUri, comment, TestUtils.SUPER_ADMIN_CREDENTIALS.getUserName(),
             TestUtils.SUPER_ADMIN_CREDENTIALS.getPassword());
-        Assert.assertEquals(getHttpMethodInfo(postMethod), HttpStatus.SC_CREATED, postMethod.getStatusCode());
+        Assert.assertEquals(getHttpMethodInfo(postResponse), HttpStatus.SC_CREATED, postResponse.getCode());
 
-        getMethod = executeGet(commentsUri);
-        Assert.assertEquals(getHttpMethodInfo(getMethod), HttpStatus.SC_OK, getMethod.getStatusCode());
+        getResponse = executeGet(commentsUri);
+        Assert.assertEquals(getHttpMethodInfo(getResponse), HttpStatus.SC_OK, getResponse.getCode());
 
-        comments = (Comments) unmarshaller.unmarshal(getMethod.getResponseBodyAsStream());
+        comments = (Comments) unmarshaller.unmarshal(getResponse.getResponseBodyAsStream());
 
         Assert.assertEquals(numberOfComments + 1, comments.getComments().size());
     }
@@ -109,21 +110,21 @@ public class CommentsResourceIT extends AbstractHttpIT
     {
         String commentsUri = buildURI(CommentsResource.class, getWiki(), this.spaces, this.pageName).toString();
 
-        GetMethod getMethod = executeGet(commentsUri);
-        Assert.assertEquals(getHttpMethodInfo(getMethod), HttpStatus.SC_OK, getMethod.getStatusCode());
+        CloseableHttpResponse getResponse = executeGet(commentsUri);
+        Assert.assertEquals(getHttpMethodInfo(getResponse), HttpStatus.SC_OK, getResponse.getCode());
 
-        Comments comments = (Comments) unmarshaller.unmarshal(getMethod.getResponseBodyAsStream());
+        Comments comments = (Comments) unmarshaller.unmarshal(getResponse.getResponseBodyAsStream());
 
         int numberOfComments = comments.getComments().size();
 
-        PostMethod postMethod = executePost(commentsUri, "Comment", MediaType.TEXT_PLAIN,
+        CloseableHttpResponse postResponse = executePost(commentsUri, "Comment", MediaType.TEXT_PLAIN,
             TestUtils.SUPER_ADMIN_CREDENTIALS.getUserName(), TestUtils.SUPER_ADMIN_CREDENTIALS.getPassword());
-        Assert.assertEquals(getHttpMethodInfo(postMethod), HttpStatus.SC_CREATED, postMethod.getStatusCode());
+        Assert.assertEquals(getHttpMethodInfo(postResponse), HttpStatus.SC_CREATED, postResponse.getCode());
 
-        getMethod = executeGet(commentsUri);
-        Assert.assertEquals(getHttpMethodInfo(getMethod), HttpStatus.SC_OK, getMethod.getStatusCode());
+        getResponse = executeGet(commentsUri);
+        Assert.assertEquals(getHttpMethodInfo(getResponse), HttpStatus.SC_OK, getResponse.getCode());
 
-        comments = (Comments) unmarshaller.unmarshal(getMethod.getResponseBodyAsStream());
+        comments = (Comments) unmarshaller.unmarshal(getResponse.getResponseBodyAsStream());
 
         Assert.assertEquals(numberOfComments + 1, comments.getComments().size());
     }
@@ -133,22 +134,22 @@ public class CommentsResourceIT extends AbstractHttpIT
     {
         String commentsUri = buildURI(CommentsResource.class, getWiki(), this.spaces, this.pageName).toString();
 
-        GetMethod getMethod = executeGet(commentsUri);
-        Assert.assertEquals(getHttpMethodInfo(getMethod), HttpStatus.SC_OK, getMethod.getStatusCode());
+        CloseableHttpResponse getResponse = executeGet(commentsUri);
+        Assert.assertEquals(getHttpMethodInfo(getResponse), HttpStatus.SC_OK, getResponse.getCode());
 
-        Comments comments = (Comments) unmarshaller.unmarshal(getMethod.getResponseBodyAsStream());
+        Comments comments = (Comments) unmarshaller.unmarshal(getResponse.getResponseBodyAsStream());
 
         int numberOfComments = comments.getComments().size();
 
-        PostMethod postMethod = executePost(commentsUri, "Comment", MediaType.TEXT_PLAIN,
+        CloseableHttpResponse postResponse = executePost(commentsUri, "Comment", MediaType.TEXT_PLAIN,
             TestUtils.SUPER_ADMIN_CREDENTIALS.getUserName(), TestUtils.SUPER_ADMIN_CREDENTIALS.getPassword(), null);
-        Assert.assertEquals(getHttpMethodInfo(postMethod), HttpStatus.SC_FORBIDDEN, postMethod.getStatusCode());
-        Assert.assertEquals("Invalid or missing form token.", postMethod.getResponseBodyAsString());
+        Assert.assertEquals(getHttpMethodInfo(postResponse), HttpStatus.SC_FORBIDDEN, postResponse.getCode());
+        Assert.assertEquals("Invalid or missing form token.", postResponse.getResponseBodyAsString());
 
-        getMethod = executeGet(commentsUri);
-        Assert.assertEquals(getHttpMethodInfo(getMethod), HttpStatus.SC_OK, getMethod.getStatusCode());
+        getResponse = executeGet(commentsUri);
+        Assert.assertEquals(getHttpMethodInfo(getResponse), HttpStatus.SC_OK, getResponse.getCode());
 
-        comments = (Comments) unmarshaller.unmarshal(getMethod.getResponseBodyAsStream());
+        comments = (Comments) unmarshaller.unmarshal(getResponse.getResponseBodyAsStream());
 
         Assert.assertEquals(numberOfComments, comments.getComments().size());
     }
@@ -158,10 +159,10 @@ public class CommentsResourceIT extends AbstractHttpIT
     {
         String commentsUri = buildURI(CommentsResource.class, getWiki(), this.spaces, this.pageName).toString();
 
-        GetMethod getMethod = executeGet(commentsUri);
-        Assert.assertEquals(getHttpMethodInfo(getMethod), HttpStatus.SC_OK, getMethod.getStatusCode());
+        CloseableHttpResponse getResponse = executeGet(commentsUri);
+        Assert.assertEquals(getHttpMethodInfo(getResponse), HttpStatus.SC_OK, getResponse.getCode());
 
-        Comments comments = (Comments) unmarshaller.unmarshal(getMethod.getResponseBodyAsStream());
+        Comments comments = (Comments) unmarshaller.unmarshal(getResponse.getResponseBodyAsStream());
 
         for (Comment comment : comments.getComments()) {
             checkLinks(comment);
@@ -173,20 +174,20 @@ public class CommentsResourceIT extends AbstractHttpIT
     {
         String pageHistoryUri = buildURI(PageHistoryResource.class, getWiki(), this.spaces, this.pageName).toString();
 
-        GetMethod getMethod = executeGet(pageHistoryUri);
-        Assert.assertEquals(getHttpMethodInfo(getMethod), HttpStatus.SC_OK, getMethod.getStatusCode());
+        CloseableHttpResponse getResponse = executeGet(pageHistoryUri);
+        Assert.assertEquals(getHttpMethodInfo(getResponse), HttpStatus.SC_OK, getResponse.getCode());
 
-        History history = (History) unmarshaller.unmarshal(getMethod.getResponseBodyAsStream());
+        History history = (History) unmarshaller.unmarshal(getResponse.getResponseBodyAsStream());
 
         for (HistorySummary historySummary : history.getHistorySummaries()) {
-            getMethod = executeGet(getFirstLinkByRelation(historySummary, Relations.PAGE).getHref());
-            Assert.assertEquals(getHttpMethodInfo(getMethod), HttpStatus.SC_OK, getMethod.getStatusCode());
+            getResponse = executeGet(getFirstLinkByRelation(historySummary, Relations.PAGE).getHref());
+            Assert.assertEquals(getHttpMethodInfo(getResponse), HttpStatus.SC_OK, getResponse.getCode());
 
-            Page page = (Page) unmarshaller.unmarshal(getMethod.getResponseBodyAsStream());
+            Page page = (Page) unmarshaller.unmarshal(getResponse.getResponseBodyAsStream());
 
             if (getFirstLinkByRelation(page, Relations.COMMENTS) != null) {
-                getMethod = executeGet(getFirstLinkByRelation(page, Relations.COMMENTS).getHref());
-                Assert.assertEquals(getHttpMethodInfo(getMethod), HttpStatus.SC_OK, getMethod.getStatusCode());
+                getResponse = executeGet(getFirstLinkByRelation(page, Relations.COMMENTS).getHref());
+                Assert.assertEquals(getHttpMethodInfo(getResponse), HttpStatus.SC_OK, getResponse.getCode());
             }
         }
     }
@@ -196,24 +197,24 @@ public class CommentsResourceIT extends AbstractHttpIT
     {
         String commentsUri = buildURI(CommentsResource.class, getWiki(), this.spaces, this.pageName).toString();
 
-        GetMethod getMethod = executeGet(commentsUri);
-        Assert.assertEquals(getHttpMethodInfo(getMethod), HttpStatus.SC_OK, getMethod.getStatusCode());
+        CloseableHttpResponse getResponse = executeGet(commentsUri);
+        Assert.assertEquals(getHttpMethodInfo(getResponse), HttpStatus.SC_OK, getResponse.getCode());
 
-        Comments comments = (Comments) unmarshaller.unmarshal(getMethod.getResponseBodyAsStream());
+        Comments comments = (Comments) unmarshaller.unmarshal(getResponse.getResponseBodyAsStream());
 
         int numberOfComments = comments.getComments().size();
 
         NameValuePair[] nameValuePairs = new NameValuePair[1];
         nameValuePairs[0] = new NameValuePair("text", "Comment");
 
-        PostMethod postMethod = executePostForm(commentsUri, nameValuePairs,
+        CloseableHttpResponse postResponse = executePostForm(commentsUri, nameValuePairs,
             TestUtils.SUPER_ADMIN_CREDENTIALS.getUserName(), TestUtils.SUPER_ADMIN_CREDENTIALS.getPassword());
-        Assert.assertEquals(getHttpMethodInfo(postMethod), HttpStatus.SC_CREATED, postMethod.getStatusCode());
+        Assert.assertEquals(getHttpMethodInfo(postResponse), HttpStatus.SC_CREATED, postResponse.getCode());
 
-        getMethod = executeGet(commentsUri);
-        Assert.assertEquals(getHttpMethodInfo(getMethod), HttpStatus.SC_OK, getMethod.getStatusCode());
+        getResponse = executeGet(commentsUri);
+        Assert.assertEquals(getHttpMethodInfo(getResponse), HttpStatus.SC_OK, getResponse.getCode());
 
-        comments = (Comments) unmarshaller.unmarshal(getMethod.getResponseBodyAsStream());
+        comments = (Comments) unmarshaller.unmarshal(getResponse.getResponseBodyAsStream());
 
         Assert.assertEquals(numberOfComments + 1, comments.getComments().size());
     }

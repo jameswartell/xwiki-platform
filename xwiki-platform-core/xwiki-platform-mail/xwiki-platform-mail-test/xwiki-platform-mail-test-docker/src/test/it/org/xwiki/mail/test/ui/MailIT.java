@@ -28,7 +28,6 @@ import java.util.regex.Pattern;
 
 import javax.mail.internet.MimeMessage;
 
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Order;
@@ -44,6 +43,7 @@ import org.xwiki.test.docker.junit5.TestConfiguration;
 import org.xwiki.test.docker.junit5.UITest;
 import org.xwiki.test.integration.junit.LogCaptureConfiguration;
 import org.xwiki.test.ui.TestUtils;
+import org.xwiki.test.ui.TestUtils.TestCredentials;
 import org.xwiki.test.ui.XWikiWebDriver;
 import org.xwiki.test.ui.po.ViewPage;
 
@@ -216,7 +216,7 @@ class MailIT
         // We also add an attachment to the Mail Template page to verify that it is sent in the mail
         ByteArrayInputStream bais = new ByteArrayInputStream("Content of attachment".getBytes());
         setup.attachFile(this.testClassName, "MailTemplate", "something.txt", bais, true,
-            new UsernamePasswordCredentials("superadmin", "pass"));
+            new TestCredentials("superadmin", "pass"));
 
         String requestURLPrefix = String.format("http://%s:%s/xwiki/bin/view",
             testConfiguration.getServletEngine().getInternalIP(),
