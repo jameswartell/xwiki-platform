@@ -57,6 +57,7 @@ import org.xwiki.test.docker.junit5.TestReference;
 import org.xwiki.test.docker.junit5.UITest;
 import org.xwiki.test.ui.TestUtils;
 import org.xwiki.test.ui.po.LiveTableElement;
+import org.xwiki.test.ui.po.SuggestInputElement;
 import org.xwiki.test.ui.po.ViewPage;
 
 /**
@@ -295,7 +296,8 @@ class PDFExportIT
         setup.createPage(testReference, "", "").createPage().createPageFromTemplate("My cool template", null, null,
             "XWiki.PDFExport.TemplateProvider");
         PDFTemplateEditPage templateEditPage = new PDFTemplateEditPage();
-        templateEditPage.setCover(templateEditPage.getCover().replace("<h1>", "<h1>Book: "));
+        templateEditPage.setCover(templateEditPage.getCover().replace("<h1>", "<h1>Book: ").replace("</p>",
+            "</p>\n<p>$escapetool.xml($tdoc.externalURL)</p>"));
         templateEditPage
             .setTableOfContents(templateEditPage.getTableOfContents().replace("core.pdf.tableOfContents", "Chapters"));
         templateEditPage.setHeader(templateEditPage.getHeader().replaceFirst("<span ", "Chapter: <span "));
@@ -305,9 +307,11 @@ class PDFExportIT
         // Register the template in the PDF export administration section.
         setup.loginAsSuperAdmin();
         PDFExportAdministrationSectionPage adminSection = PDFExportAdministrationSectionPage.gotoPage();
-        adminSection.getTemplatesInput().sendKeys("my cool").waitForSuggestions()
-            .selectByVisibleText("My cool template");
-        adminSection.clickSave();
+        SuggestInputElement templatesInput = adminSection.getTemplatesInput();
+        if (!StringUtils.join(templatesInput.getValues(), ",").contains("My cool template")) {
+            templatesInput.sendKeys("my cool").waitForSuggestions().selectByVisibleText("My cool template");
+            adminSection.clickSave();
+        }
 
         // We also have to give script rights to the template author because it was created based on the default one
         // which contains scripts.
@@ -319,6 +323,7 @@ class PDFExportIT
         PDFExportOptionsModal exportOptions = PDFExportOptionsModal.open(new ViewPage());
         exportOptions.getTemplateSelect().selectByVisibleText("My cool template");
 
+        String currentURL = setup.getDriver().getCurrentUrl().replaceAll("/WebHome.*", "/");
         try (PDFDocument pdf = export(exportOptions, testConfiguration)) {
             // Verify that the custom PDF template was used.
 
@@ -328,6 +333,7 @@ class PDFExportIT
             // Verify the custom cover page.
             String coverPageText = pdf.getTextFromPage(0);
             assertTrue(coverPageText.contains("Book: Parent"), "Unexpected cover page text: " + coverPageText);
+            assertTrue(coverPageText.contains(currentURL), "Unexpected cover page text: " + coverPageText);
 
             // Verify the custom table of contents page.
             String tocPageText = pdf.getTextFromPage(1);
